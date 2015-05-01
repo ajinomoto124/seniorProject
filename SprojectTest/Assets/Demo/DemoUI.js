@@ -14,6 +14,7 @@ var numLines : int = 3;
 var infoOn : boolean = false;
 var infoSequence : int = 0;
 var infoSequence2 : int = 0;
+var showHelp : boolean = false;
 var numActions : int = 0;
 var levelInfo : Object;
 var overlay : GameObject;
@@ -56,6 +57,8 @@ private var finished : boolean = false;
 private var failDict : Object = {};
 var doneText : String = "";
 
+private var inRepeat : boolean = false;
+private var inIf : boolean = false;
 private var pause : boolean = false;
 
 var ifButton : Button;
@@ -133,9 +136,9 @@ function Start () {
 		actButton.interactable = true;
 	}
 	else if (level == 3){
-		ifButton.interactable = false;
-		repButton.interactable = true;
-		actButton.interactable = false;
+		ifButton.interactable = true;
+		repButton.interactable = false;
+		actButton.interactable = true;
 	}
 	else{
 		ifButton.interactable = true;
@@ -150,7 +153,7 @@ function Start () {
 }
 
 function Update () {
-	
+
 	if(infoOn){
 		overlay.gameObject.SetActive(true);
 		if(Input.GetButtonDown("Space") || Input.GetMouseButtonDown(0)){
@@ -166,13 +169,21 @@ function Update () {
 					}
 					else{
 					infoOn = false;
-					
+					GameObject.Find("GLOBAL").GetComponent("GLOBAL").advanceLevel();
 					Application.LoadLevel("LevelSelect");
 					}
 				}
 			}
 			else if(failure){
-				GameObject.Find("GLOBAL").GetComponent("GLOBAL").level1();
+				if(level == 1){
+					GameObject.Find("GLOBAL").GetComponent("GLOBAL").level1();
+				}
+				else if(level == 2){
+					GameObject.Find("GLOBAL").GetComponent("GLOBAL").level2();
+				}
+				else if(level == 3){
+					GameObject.Find("GLOBAL").GetComponent("GLOBAL").level3();
+				}
 			}
 			else{
 				if(!pause){
@@ -196,6 +207,8 @@ function Update () {
 					
 				}
 				else{
+//					infoSequence++;
+						helpText = levelInfo.info[infoSequence];
 					Debug.Log("turned off info");
 					infoOn = false;
 				}
@@ -204,6 +217,14 @@ function Update () {
 	}
 	else{
 		overlay.gameObject.SetActive(false);
+	}
+	if(showHelp && !infoOn){
+//		Debug.Log("Showing help");
+		overlay.gameObject.SetActive(true);
+		if(Input.GetButtonDown("Space")){
+			showHelp = false;
+			overlay.gameObject.SetActive(false);
+		}
 	}
 	if(levelInfo.movebox[infoSequence+infoSequence2] == 1){
 		infoBox.MoveRight();
@@ -252,17 +273,24 @@ function Update () {
 	if(Input.GetButtonDown("2")){
 		addAction();
 	}
-	if(Input.GetButtonDown("I")){
-		infoOn = !infoOn;
-	}
+//	if(Input.GetButtonDown("I")){
+//		infoOn = !infoOn;
+//	}
 
 
 	if(Input.GetButtonDown("W")){
+		Debug.Log("pause is "+pause+" editIf is "+editIf+" conditionalBool "+conditionalBool+" level "+level);
 		if (editRepeat && repeatTimes < 3){
 			repeatTimes++;
 		}
 		if (pause && editRepeat && repeatTimes == 3 && level==2){
-//			infoSequence++;
+			infoSequence++;
+			helpText = levelInfo.info[infoSequence];
+			pause = false;
+			infoOn = true;
+		}
+		if(pause && editIf && conditionalBool == 2 && level == 3){
+			infoSequence++;
 			helpText = levelInfo.info[infoSequence];
 			pause = false;
 			infoOn = true;
@@ -305,6 +333,9 @@ function Update () {
 			}
 		}
 	}
+	if(Input.GetButtonDown("H")){
+		help();
+	}
 	//TODO: COMMENT THIS OUT FOR RELEASE. DEBUGGING ONLY
 	if(Input.GetButtonDown("B")){
 		Debug.Log(root.parse());
@@ -340,6 +371,11 @@ function clearLayers(){
 		
 	}
 }
+
+function help(){
+	showHelp = !showHelp;
+}
+
 function actionBlock(){
 	
 }
@@ -353,6 +389,8 @@ function prepLevel(){
 	else if(level == 2){
 	}
 	else if(level == 3){
+	}
+	else{
 	}
 }
 
@@ -560,6 +598,7 @@ function reset(){
 	doneText = "";
 	clearLayers();
 	layer = 0;
+	inRepeat = false;
 }
 
 function displayNodes(){
@@ -840,33 +879,52 @@ function addIfNode(){
 }
 
 function addIf(){
-	if(lines < numLines){
-		
-		ifLine = lines;
-		code[lines] = "If (<b>" + conditional + " </b> -";
-		addIfNode();
-		addLines();
-		editAction = false;
-		editRepeat = false;
-		editIf = true;
+	if(inIf){
+		addEnd();
+	}
+	else{
+		inIf = true;
+		if(pause && level == 3){
+			pause = false;
+			infoOn = true;
+			infoSequence++;
+			helpText = levelInfo.info[infoSequence];
+			pause = true;
+		}
+		if(lines < numLines){
+			ifLine = lines;
+			code[lines] = "If (<b>" + conditional + " </b> -";
+			addIfNode();
+			addLines();
+			editAction = false;
+			editRepeat = false;
+			editIf = true;
+		}
 	}
 }
 function addRepeat (){
-	if(pause && level == 2){
+	if(inRepeat){
+		addEnd();
+	}
+	else {
+		inRepeat = true;
+		if(pause && level == 2){
 //			infoSequence++;
-			helpText = levelInfo.info[infoSequence];
+//			helpText = levelInfo.info[infoSequence];
+			
 			pause = false;
 			infoOn = true;
-	}
-	if(lines < numLines){
-		repeatTimes = 1;
-		repLine = lines;
-		code[lines] = "Repeat (<b>" + repeatTimes + "</b>) -";
-		addRepeatNode();
-		addLines();
-		editIf = false;
-		editAction = false;
-		editRepeat = true;
+		}
+		if(lines < numLines){
+			repeatTimes = 1;
+			repLine = lines;
+			code[lines] = "Repeat (<b>" + repeatTimes + "</b>) -";
+			addRepeatNode();
+			addLines();
+			editIf = false;
+			editAction = false;
+			editRepeat = true;
+		}
 	}
 }
 
@@ -888,11 +946,6 @@ function addAction (){
 	}
 }
 function addEnd(){
-//	if(levelInfo.braek && level == 3){
-//			helpText = levelInfo.info[infoSequence];
-//			levelInfo.braek = false;
-//			infoOn = true;
-//	}
 	if(lines < numLines){
 		if(indents == "        "){
 			indents = "    ";
@@ -909,8 +962,7 @@ function addEnd(){
 	
 	addEndNode();
 	addLines();
-	}
-	
+	}	
 }
 
 function getLines(){

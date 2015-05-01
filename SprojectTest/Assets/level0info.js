@@ -34,7 +34,7 @@ function Start () {
 	info[4] = "At the top of the screen there are three buttons.  You can click these buttons to add code into our code screen. \n\nIf you would rather press keys, you can type the number in bold instead of clicking the button";
 	
 	movebox[5] = 0;
-	info[5] = "At the bottom left we can see the number of lines we've used over the number of lines we are allowed to use (right now, we've used 1 line and we are allowed to use 1 line).\n\nThe button that says 'Run' sends our code to Alex the Jellyfish.  You can also press the 'Enter' or 'Return' key to do the same thing.\n\nYou can press the Undo button in the bottom left to remove the last line you added.";
+	info[5] = "At the bottom left we can see the number of lines we've used over the number of lines we are allowed to use (right now, we've used 1 line and we are allowed to use 1 line).\n\nIf you ever forget what you are trying to do, press the 'Help' button or type the letter 'h'.\n\nThe button that says 'Run' sends our code to Alex the Jellyfish.  You can also press the 'Enter' or 'Return' key to do the same thing.\n\nYou can press the Undo button in the bottom left to remove the last line you added.";
 
 	movebox[6] = 0;
 	info[6] = "Close this box by pressing space or clicking the screen and then press the 'Run' Button.  You will see that Alex gets our message and does what it says.\n\nIn this case, we use the code MoveRight and Alex moves to the right.";

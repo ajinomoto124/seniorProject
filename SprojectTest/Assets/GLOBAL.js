@@ -1,4 +1,5 @@
 ﻿var levelVar : int = 0;
+private var complete : int = 0;
 
 function Start () {
 	DontDestroyOnLoad(this);
@@ -6,6 +7,10 @@ function Start () {
 
 function Update () {
 
+}
+
+function advanceLevel(){
+	complete++;
 }
 
 function level0(){
