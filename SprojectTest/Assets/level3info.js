@@ -5,23 +5,36 @@ var braek : boolean = false;
 var total : int;
 var ctotal : int;
 var numLines : int;
+var numBreaks : int;
+var breakpoint : int;
+var breakpoint2 : int;
+//see level0info for variable descriptions
 
 function Start () {
-	total = 2;
+	total = 4;
 	ctotal = 1;
-	numLines = 7;
+	numLines = 3;
+	numBreaks = 2;
+	breakpoint = 1;
+	breakpoint2 = 3;
 	movebox = new int[total+ctotal];
 	info = new String[total];
 	completeInfo = new String[ctotal];
 	
 	movebox[0] = 0;
-	info[0] = "Let's try add and end to this repeat";
-	
+	info[0] = "";
+
 	movebox[1] = 0;
-	info[1] = "Now that we've ended this repeat, let's add a Move Down for Alex";
+	info[1] = "";
 	
 	movebox[2] = 0;
-	completeInfo[0] = "Great job!  \n\nAs you can see, everything after Repeat and before End happened twice and the line we have after End only happened once!\n\nRepeats are very useful for doing a lot of actions without having to write as many lines of code";
+	info[2] = "";
+	
+	movebox[3] = 0;
+	info[3] = "";
+
+	movebox[4] = 1;
+	completeInfo[0] = "";
 }
 
 function Update () {

@@ -1,11 +1,12 @@
-﻿var info : String[];
-var movebox : int[];
-var completeInfo : String[];
-var braek : boolean = false;
-var total : int;
-var ctotal : int;
-var numLines : int;
-
+﻿var info : String[]; 			//string array that holds tutorial messages
+var movebox : int[];			//corresponding array that tells info box where to move
+var completeInfo : String[]; 	//string array that has messages for after objective is completed
+var braek : boolean = false; 	//boolean says if we are currently on a break between messages
+var total : int; 				//total number of lines in all info messages
+var ctotal : int; 				//total number of lines in complete info messages
+var numLines : int; 			//how many lines the user is allowed to use
+var breakpoint : int; 			//where the break (braek) is between 1st and later objectives
+var numBreaks : int;			//number of breakpoints we have
 
 function Start () {
 	total = 7;
@@ -14,9 +15,9 @@ function Start () {
 	movebox = new int[total+ctotal];
 	info = new String[total];
 	completeInfo = new String[ctotal];
-
 	
 	//set up for tutorial text
+	//movebox is 0 for center, -1 for left, and 1 for right
 	movebox[0] = 0;
 	info[0] = "Hello There! \n\nWelcome to your first lesson with Jelly Code.  Here you will learn the basics in computer science without the hassle of having to type all the code out yourself.";
 	

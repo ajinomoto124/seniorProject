@@ -2,14 +2,11 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Demo/DemoUI.js">
     <Files>
-      <File FileName="Assets/Demo/DemoUI.js" Line="484" Column="23" />
-      <File FileName="Assets/Demo/Interpreter.js" Line="247" Column="10" />
-      <File FileName="Assets/Demo/PlayerPosition.js" Line="58" Column="39" />
-      <File FileName="Assets/level0info.js" Line="16" Column="36" />
-      <File FileName="Assets/GLOBAL.js" Line="17" Column="1" />
-      <File FileName="Assets/level1info.js" Line="24" Column="17" />
-      <File FileName="Assets/Title/TitleUI.js" Line="29" Column="3" />
-      <File FileName="Assets/level3info.js" Line="12" Column="14" />
+      <File FileName="Assets/Demo/DemoUI.js" Line="189" Column="20" />
+      <File FileName="Assets/level1info.js" Line="16" Column="16" />
+      <File FileName="Assets/level2info.js" Line="19" Column="17" />
+      <File FileName="Assets/level0info.js" Line="9" Column="55" />
+      <File FileName="Assets/level3info.js" Line="23" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

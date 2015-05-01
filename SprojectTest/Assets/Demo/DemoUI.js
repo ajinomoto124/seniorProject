@@ -56,6 +56,12 @@ private var finished : boolean = false;
 private var failDict : Object = {};
 var doneText : String = "";
 
+private var pause : boolean = false;
+
+var ifButton : Button;
+var repButton : Button;
+var actButton : Button;
+
 private var layers;
 private var layer : int;//counter for current layer
 
@@ -65,7 +71,6 @@ function Start () {
 
 	layers = new Array();
 	clearLayers();
-
 	
 	interp = GameObject.Find("Interpreter").GetComponent("Interpreter"); 
 	P = GameObject.Find("player").GetComponent("PlayerPosition"); 
@@ -101,7 +106,6 @@ function Start () {
 	actions[7] = "";
 	actions[8] = "";
 	actions[9] = "";
-	//Debug.Log("Level : " + level);
 	
 	tree = new CNode();
 	root = new RootNode(tree);
@@ -110,37 +114,47 @@ function Start () {
 	failDict["repeatFail"] = "Try adding a repeat loop with the correct amount of loops";
 	
 	var levelHelp : String = "level"+level+"info";
-//	try
-//        {
-//            levelInfo = GameObject.Find(levelHelp).GetComponent(levelHelp);
-//        }
-//        catch (e)
-//        {
-//            Debug.Log(e.ToString());
-//        }
-	//Debug.Log(levelHelp);
 	levelInfo = GameObject.Find(levelHelp).GetComponent(levelHelp);
-	//Debug.Log(infoSequence + " info");
 	helpText = levelInfo.info[infoSequence];
 	
-	
+	if(level == 0){
+		ifButton.interactable = false;
+		repButton.interactable = false;
+		actButton.interactable = false;
+	}
+	else if(level == 1){
+		ifButton.interactable = false;
+		repButton.interactable = false;
+		actButton.interactable = true;
+	}
+	else if(level == 2){
+		ifButton.interactable = false;
+		repButton.interactable = true;
+		actButton.interactable = true;
+	}
+	else if (level == 3){
+		ifButton.interactable = false;
+		repButton.interactable = true;
+		actButton.interactable = false;
+	}
+	else{
+		ifButton.interactable = true;
+		repButton.interactable = true;
+		actButton.interactable = true;
+	}
 	numLines = levelInfo.numLines;
 
 	code = new String[numLines];
-//	for(i = 0; i < numLines; i++){
-//		code[i] = "";
-//	}
 	prepLevel();
 	infoOn = true;
 }
 
 function Update () {
 	
-	
-	
 	if(infoOn){
 		overlay.gameObject.SetActive(true);
 		if(Input.GetButtonDown("Space") || Input.GetMouseButtonDown(0)){
+			
 			if(success){
 				if(infoSequence2 < levelInfo.ctotal-1){
 					infoSequence2++;
@@ -161,22 +175,28 @@ function Update () {
 				GameObject.Find("GLOBAL").GetComponent("GLOBAL").level1();
 			}
 			else{
-				if(infoSequence < levelInfo.total-1 && !levelInfo.braek){
-					infoSequence++;
-					Debug.Log("level and infoseq "+level + " " + infoSequence);
-					if(level == 1 && infoSequence == 2 ){
-						levelInfo.braek = true;
+				if(!pause){
+//					Debug.Log("infoseq "+ infoSequence );
+						
+					if(infoSequence == levelInfo.breakpoint ||infoSequence == levelInfo.breakpoint2 ||infoSequence == levelInfo.breakpoint3){
+						Debug.Log("triggered breakpoint on line "+ infoSequence);
+						infoSequence++;
+						helpText = levelInfo.info[infoSequence];
+						pause = true;
 					}
-					else if (level == 3 && infoSequence == 1){
-						levelInfo.braek = true;
+					else if (infoSequence == levelInfo.total-1){
+						Debug.Log("triggered end of text on " +infoSequence);
+						pause = true;
 					}
 					else{
+						Debug.Log("continuing text");
+						infoSequence++;
 						helpText = levelInfo.info[infoSequence];
 					}
 					
 				}
 				else{
-					
+					Debug.Log("turned off info");
 					infoOn = false;
 				}
 			}
@@ -185,8 +205,6 @@ function Update () {
 	else{
 		overlay.gameObject.SetActive(false);
 	}
-	//Debug.Log("level "+levelInfo);
-	//Debug.Log("infosequence "+infoSequence);
 	if(levelInfo.movebox[infoSequence+infoSequence2] == 1){
 		infoBox.MoveRight();
 	}
@@ -196,16 +214,6 @@ function Update () {
 	else if(levelInfo.movebox[infoSequence+infoSequence2] == 0){
 		infoBox.MoveCenter();
 	}
-
-//	if (editPlayerX){
-//		code[playerLine] = "if (<b>" + playerX + "</b>, " + playerY + ");";
-//	}
-//	if (editPlayerY){
-//		code[playerLine] = "Player (" + playerX + ", <b>" + playerY + "</b>);";
-//	}
-//	else if (player == 1 && !editPlayerX && !editPlayerY){
-//		code[playerLine] = "Player (" + playerX + ", " + playerY + ");";
-//	}
 	if(editIf){
 		code[ifLine] = indents+ "If (<b>" + conditions[conditionalBool] + "</b>) -";
 		updateIf(conditionalBool);
@@ -216,18 +224,9 @@ function Update () {
 
 		updateRepeat(repeatTimes);
 	}
-//	else if (repeatTimes > 0 && !editRepeat){
-//		code[repLine] = indents+ "Repeat (<b>" + repeatTimes + "</b>) -";
-//	}
-	if (editAction){
-			code[actLine] = indents+ actions[action];	
-//			if(action == 0){
-//				code[actLine] = indents+ actions[action];
-//			}
-//			else{
-//				code[actLine] = indents+ actions[action];
-//			}
 
+	if (editAction){
+		code[actLine] = indents+ actions[action];
 		updateMethod(action);
 		
 	}
@@ -245,62 +244,31 @@ function Update () {
 		Run();
 	}
 	if(Input.GetButtonDown("0")){
-		//addPlayer();
 		addIf();
-//		addIfNode();
-//		addLines();
 	}
 	if(Input.GetButtonDown("1")){
 		addRepeat();
-//		addRepeatNode();
-//		addLines();
 	}
 	if(Input.GetButtonDown("2")){
 		addAction();
-
-//		addMethodNode(0);
-//		addLines();
 	}
 	if(Input.GetButtonDown("I")){
-//		P.Move();
 		infoOn = !infoOn;
-//		testdelay(3);
 	}
 
-////Button presses
-//	if(Input.GetButtonDown("A")){
-//		if(editPlayerX){
-//			editPlayerX = false;
-//			editPlayerY = true;
-//		}
-//		else if (editPlayerY){
-//			editPlayerY = false;
-//			editPlayerX = true;
-//		}
-//	}
-//	if(Input.GetButtonDown("D")){
-//		if(editPlayerX){
-//			editPlayerX = false;
-//			editPlayerY = true;
-//		}
-//		else if (editPlayerY){
-//			editPlayerY = false;
-//			editPlayerX = true;
-//		}
-//	}
+
 	if(Input.GetButtonDown("W")){
-//		if(editPlayerX && playerX < 130){
-//			playerX = playerX + 10;
-//		}
-//		else if (editPlayerY && playerY < 100){
-//			playerY = playerY + 10;
-//		}
-//		else 
 		if (editRepeat && repeatTimes < 3){
 			repeatTimes++;
 		}
+		if (pause && editRepeat && repeatTimes == 3 && level==2){
+//			infoSequence++;
+			helpText = levelInfo.info[infoSequence];
+			pause = false;
+			infoOn = true;
+		}
 		else if (editAction){
-			if(action < 5){
+			if(action < 4){
 				action++;
 			}
 			else{
@@ -308,31 +276,15 @@ function Update () {
 			}
 		}	
 		else if (editIf){
-			if(conditionalBool < 5){
+			if(conditionalBool < 4){
 				conditionalBool++;
 			}
 			else{
 				conditionalBool = 0;
 			}
-//			if(conditional == "Is Under Water"){
-//				conditionalBool = 23;
-//				conditional = "Is Not Under Water";
-//			}
-//			else{
-//				conditionalBool = 24;
-//				conditional = "Is Under Water";
-//			}
-//			
 		}
 	}
 	if(Input.GetButtonDown("S")){
-//		if(editPlayerX && playerX > 0){
-//			playerX = playerX - 10;
-//		}
-//		else if (editPlayerY && playerY > 0){
-//			playerY = playerY - 10;
-//		}
-//		else 
 		if (editRepeat && repeatTimes > 0){
 			repeatTimes--;
 		}
@@ -359,8 +311,6 @@ function Update () {
 		for(i = 0; i < root.lex().length; i++){
 			Debug.Log(root.parse2()[i]+" "+root.lex()[i]);
 		}
-//		P.RotateLeft();
-//		Application.LoadLevel("LevelSelect");
 	}
 	if(Input.GetButtonDown("G")){
 		var a = "";
@@ -538,24 +488,6 @@ function rep(currLayer : int) : IEnumerator{
 			yield WaitForSeconds(6);
 		}
 	}
-//	for(i = 0; i <= layer; i++){
-//		Debug.Log("layer: "+i);
-//		var counter = 1;
-//		
-//		for(k = i; k <= layer;k++){
-//			Debug.Log(layers[k][9]);
-//			counter *= layers[k][9];
-//		}
-//		Debug.Log("counter: "+counter);
-//		Debug.Log("layers i 0: "+ layers[i][0]);
-//			for(j = 0; j < layers[i][0]*counter;j++){
-//				Debug.Log("movign right");
-//				P.moveRight();
-//				yield WaitForSeconds(2);
-//			}
-//		
-//	}
-	
 }
 function checkState(){
 	Debug.Log("at check state level is "+ level + " and layers01 is "+layers[0][1]);
@@ -583,6 +515,13 @@ function checkState(){
 			infoOn = true;
 		}
 	}
+}
+
+function undo(){
+	Debug.Log("undid previous action");
+	
+
+
 }
 function reset(){
 	Debug.Log("RESET");
@@ -622,9 +561,6 @@ function reset(){
 	clearLayers();
 	layer = 0;
 }
-
-//function move(){
-//}
 
 function displayNodes(){
 	//root.display();
@@ -903,15 +839,6 @@ function addIfNode(){
 	available = true;
 }
 
-//function addPlayer (){
-//	player = 1;
-//	editRepeat = false;
-//	editAction = false;
-////	editPlayerX = true;
-//	playerLine = lines;
-//	code[lines] = "If (true) -";
-//}
-
 function addIf(){
 	if(lines < numLines){
 		
@@ -925,11 +852,14 @@ function addIf(){
 	}
 }
 function addRepeat (){
+	if(pause && level == 2){
+//			infoSequence++;
+			helpText = levelInfo.info[infoSequence];
+			pause = false;
+			infoOn = true;
+	}
 	if(lines < numLines){
 		repeatTimes = 1;
-	//	editPlayerX = false;
-	//	editPlayerY = false;
-		
 		repLine = lines;
 		code[lines] = "Repeat (<b>" + repeatTimes + "</b>) -";
 		addRepeatNode();
@@ -941,18 +871,14 @@ function addRepeat (){
 }
 
 function addAction (){
-	if(levelInfo.braek && level == 0){
+	if(pause && level == 1){
 			infoSequence++;
 			helpText = levelInfo.info[infoSequence];
-			levelInfo.braek = false;
+			pause = false;
 			infoOn = true;
 	}
 	if(lines < numLines){
 		actLine = lines;
-		//action = 0;
-	//	editPlayerX = false;
-	//	editPlayerY = false;
-		
 		code[lines] = "Alex.MoveRight();";
 		addMethodNode(0);
 		addLines();
@@ -962,12 +888,11 @@ function addAction (){
 	}
 }
 function addEnd(){
-	if(levelInfo.braek && level == 3){
-			//infoSequence++;
-			helpText = levelInfo.info[infoSequence];
-			levelInfo.braek = false;
-			infoOn = true;
-	}
+//	if(levelInfo.braek && level == 3){
+//			helpText = levelInfo.info[infoSequence];
+//			levelInfo.braek = false;
+//			infoOn = true;
+//	}
 	if(lines < numLines){
 		if(indents == "        "){
 			indents = "    ";

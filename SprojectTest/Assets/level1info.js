@@ -5,11 +5,15 @@ var braek : boolean = false;
 var total : int;
 var ctotal : int;
 var numLines : int;
+var breakpoint : int;
+var numBreaks : int;
+//see level0info for variable descriptions
 
 function Start () {
 	total = 4;
 	ctotal = 1;
 	numLines = 1;
+	breakpoint = 1;
 	movebox = new int[total+ctotal];
 	info = new String[total];
 	completeInfo = new String[ctotal];
